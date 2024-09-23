@@ -1,9 +1,10 @@
-import type { MaybeArray } from './helpers/types';
+import type { MaybeArray } from './core/helpers/types';
 
-import { createClient, GetUpdatesDTO, RawApi } from './network/api';
+import { createClient, RawApi } from './core/network/api';
 import type {
-  BotCommand, ClientOptions, EditMyInfoDTO, FlattenReq, SendMessageDTO, UpdateType,
-} from './network/api';
+  BotCommand, ClientOptions, EditMyInfoDTO, FlattenReq,
+  GetUpdatesDTO, SendMessageDTO, UpdateType,
+} from './core/network/api';
 
 export class Api {
   raw: RawApi;
