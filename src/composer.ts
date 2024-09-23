@@ -48,25 +48,32 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     });
   };
 
+  command = (
+    command: Triggers,
+    ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_created'>>>
+  ) => {
+    const handler = compose(middlewares);
+    return this.use((ctx, next) => {
+      if (!ctx.has(createdMessage('text'))) return next();
+      if (!ctx.message.body.text?.startsWith('/')) return next();
+      const cmd = ctx.message.body.text.slice(1);
+      for (const trigger of normalizeTriggers(command)) {
+        if (trigger(cmd)) {
+          return handler(ctx, next);
+        }
+      }
+      return next();
+    });
+  };
+
   hears = (
     triggers: Triggers,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_created'>>>
   ) => {
     const handler = compose(middlewares);
-    const normalizedTriggers = (Array.isArray(triggers) ? triggers : [triggers]).map((trigger) => {
-      if (trigger instanceof RegExp) {
-        return (value = '') => {
-          trigger.lastIndex = 0;
-          return trigger.exec(value);
-        };
-      }
-
-      const regex = new RegExp(`^${trigger}$`);
-      return (value: string) => regex.exec(value);
-    });
     return this.use((ctx, next) => {
       if (!ctx.has(createdMessage('text'))) return next();
-      for (const trigger of normalizedTriggers) {
+      for (const trigger of normalizeTriggers(triggers)) {
         if (ctx.message.body.text && trigger(ctx.message.body.text)) {
           return handler(ctx, next);
         }
@@ -107,4 +114,17 @@ const compose = <Ctx extends Context>(middlewares: Array<Middleware<Ctx>>) => {
     return pass;
   }
   return middlewares.map(flatten).reduce(concat);
+};
+
+const normalizeTriggers = (triggers: Triggers) => {
+  return (Array.isArray(triggers) ? triggers : [triggers]).map((trigger) => {
+    if (trigger instanceof RegExp) {
+      return (value = '') => {
+        trigger.lastIndex = 0;
+        return trigger.exec(value);
+      };
+    }
+    const regex = new RegExp(`^${trigger}$`);
+    return (value: string) => regex.exec(value);
+  });
 };
