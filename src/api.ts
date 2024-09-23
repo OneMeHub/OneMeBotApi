@@ -1,16 +1,16 @@
 import type { MaybeArray } from './core/helpers/types';
 
-import { createClient, RawApi } from './core/network/api';
+import { Client, RawApi } from './core/network/api';
 import type {
-  BotCommand, ClientOptions, EditMyInfoDTO, FlattenReq,
+  BotCommand, EditMyInfoDTO, FlattenReq,
   GetUpdatesDTO, SendMessageDTO, UpdateType,
 } from './core/network/api';
 
 export class Api {
   raw: RawApi;
 
-  constructor(token: string, options?: ClientOptions) {
-    this.raw = new RawApi(createClient(token, options));
+  constructor(client: Client) {
+    this.raw = new RawApi(client);
   }
 
   getMyInfo = async () => {

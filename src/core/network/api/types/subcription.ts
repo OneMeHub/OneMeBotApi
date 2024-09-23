@@ -43,6 +43,14 @@ export type MessageEditedUpdate = MakeUpdate<'message_edited', {
 
 export type UpdateType = Update['update_type'];
 
+export type FilteredUpdate<Type extends UpdateType> =
+    | Type extends 'message_created' ? MessageCreatedUpdate
+      : Type extends 'message_callback' ? MessageCallbackUpdate
+        : Type extends 'message_removed' ? MessageRemovedUpdate
+          : Type extends 'message_edited' ? MessageEditedUpdate
+            : Type extends 'bot_started' ? BotStartedUpdate
+              : never;
+
 export type Update =
   | BotStartedUpdate
   | MessageCallbackUpdate

@@ -1,7 +1,9 @@
 import createDebug from 'debug';
+import { Composer } from './composer';
+import { Context } from './context';
 
-import type {
-  BotInfo, ClientOptions, Update, UpdateType,
+import {
+  BotInfo, ClientOptions, createClient, Update, UpdateType,
 } from './core/network/api';
 import { Polling } from './core/network/polling';
 
@@ -9,15 +11,20 @@ import { Api } from './api';
 
 const debug = createDebug('one-me:main');
 
-type BotConfig = {
-  clientOptions?: ClientOptions
+type BotConfig<Ctx extends Context> = {
+  clientOptions?: ClientOptions;
+  contextType: new (...args: ConstructorParameters<typeof Context>) => Ctx;
 };
 
 type LaunchOptions = {
-  allowedUpdates: UpdateType[]
+  allowedUpdates: UpdateType[],
 };
 
-export class Bot {
+const defaultConfig: BotConfig<Context> = {
+  contextType: Context,
+};
+
+export class Bot<Ctx extends Context = Context> extends Composer<Ctx> {
   api: Api;
 
   public botInfo?: BotInfo;
@@ -26,11 +33,15 @@ export class Bot {
 
   private pollingIsStarted = false;
 
-  config: BotConfig;
+  private config: BotConfig<Ctx>;
 
-  constructor(token: string, config?: BotConfig) {
-    this.config = { ...config };
-    this.api = new Api(token, this.config.clientOptions);
+  constructor(token: string, config?: Partial<BotConfig<Ctx>>) {
+    super();
+
+    // @ts-ignore
+    this.config = { ...defaultConfig, ...config };
+    this.api = new Api(createClient(token, this.config.clientOptions));
+
     debug('Created `Bot` instance');
   }
 
@@ -63,8 +74,11 @@ export class Bot {
     const updateId = `${update.update_type}:${update.timestamp}`;
     debug(`Processing update ${updateId}`);
 
+    const UpdateContext = this.config.contextType;
+    const ctx = new UpdateContext(update, this.api);
+
     try {
-      // Handle update here
+      await this.middleware()(ctx, () => Promise.resolve(undefined));
     } finally {
       debug(`Finished processing update ${updateId}`);
     }
