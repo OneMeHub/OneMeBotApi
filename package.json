@@ -1,0 +1,32 @@
+{
+  "name": "one-me-bot-api",
+  "version": "0.1.0",
+  "description": "OneMe Bot Framework",
+  "main": "./dist/index.js",
+  "repository": "https://gitlab.com/juicedev/oneme-bot-api-library",
+  "author": "Juice Development",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --watch ./src/ --watch .env ./src/index.ts",
+    "lint": "eslint ./src --ext ts --report-unused-disable-directives"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/node": "^22.5.5",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "debug": "^4.3.7"
+  }
+}
