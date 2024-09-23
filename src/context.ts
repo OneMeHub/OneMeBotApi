@@ -1,4 +1,4 @@
-import type { MaybeArray } from './core/helpers/types';
+import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
   BotStartedUpdate,
   FilteredUpdate,
@@ -14,8 +14,10 @@ import { type Api } from './api';
 
 export type FilteredContext<
   Ctx extends Context,
-  Filter extends UpdateType,
-> = Ctx & Context<FilteredUpdate<Filter>>;
+  Filter extends UpdateType | Guard<Ctx['update']>,
+> = Filter extends UpdateType
+  ? Ctx & Context<FilteredUpdate<Filter>>
+  : Ctx & Context<Guarded<Filter>>;
 
 type GetMessage<U extends Update> =
   | U extends MessageCallbackUpdate ? U['message']
@@ -32,12 +34,15 @@ export class Context<U extends Update = Update> {
     readonly api: Api,
   ) {}
 
-  has<Ctx extends Context, Filter extends UpdateType >(
+  has<Ctx extends Context, Filter extends UpdateType | Guard<Ctx['update']>>(
     this: Ctx,
     filters: MaybeArray<Filter>,
   ): this is FilteredContext<Ctx, Filter> {
     for (const filter of Array.isArray(filters) ? filters : [filters]) {
-      if (filter === this.update.update_type) {
+      if (typeof filter === 'function'
+        ? filter(this.update)
+        : filter === this.update.update_type
+      ) {
         return true;
       }
     }
