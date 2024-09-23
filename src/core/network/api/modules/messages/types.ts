@@ -15,6 +15,4 @@ export type SendMessageDTO = {
   }
 };
 
-export type SendMessageReq = SendMessageDTO['body'] & SendMessageDTO['query'];
-
 export type SendMessageResponse = Message;
