@@ -51,10 +51,10 @@ export class Bot<Ctx extends Context = Context> extends Composer<Ctx> {
       return;
     }
 
-    this.polling = new Polling(this.api, options?.allowedUpdates);
     this.pollingIsStarted = true;
 
     this.botInfo ??= await this.api.getMyInfo();
+    this.polling = new Polling(this.api, options?.allowedUpdates);
 
     debug(`Starting @${this.botInfo.username}`);
     await this.polling.loop(this.handleUpdate);
@@ -75,7 +75,7 @@ export class Bot<Ctx extends Context = Context> extends Composer<Ctx> {
     debug(`Processing update ${updateId}`);
 
     const UpdateContext = this.config.contextType;
-    const ctx = new UpdateContext(update, this.api);
+    const ctx = new UpdateContext(update, this.api, this.botInfo);
 
     try {
       await this.middleware()(ctx, () => Promise.resolve(undefined));

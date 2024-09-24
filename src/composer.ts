@@ -55,9 +55,16 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     const handler = compose(middlewares);
     return this.use((ctx, next) => {
       if (!ctx.has(createdMessage('text'))) return next();
-      if (!ctx.message.body.text?.startsWith('/')) return next();
-      const cmd = ctx.message.body.text.slice(1);
+      let { text } = ctx.message.body;
+      if (!text) return next();
+      const mention = ctx.message.body.markup?.[0];
+      if (mention?.type === 'user_mention' && mention.from === 0 && mention.user_id === ctx.myId) {
+        text = text.slice(mention.length).trim();
+      }
+      if (!text.startsWith('/')) return next();
+      const cmd = text.slice(1);
       for (const trigger of normalizeTriggers(command)) {
+        console.log(trigger(cmd));
         if (trigger(cmd)) {
           return handler(ctx, next);
         }
@@ -73,8 +80,14 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     const handler = compose(middlewares);
     return this.use((ctx, next) => {
       if (!ctx.has(createdMessage('text'))) return next();
+      let { text } = ctx.message.body;
+      if (!text) return next();
+      const mention = ctx.message.body.markup?.[0];
+      if (mention?.type === 'user_mention' && mention.from === 0 && mention.user_id === ctx.myId) {
+        text = text.slice(mention.length);
+      }
       for (const trigger of normalizeTriggers(triggers)) {
-        if (ctx.message.body.text && trigger(ctx.message.body.text)) {
+        if (trigger(text)) {
           return handler(ctx, next);
         }
       }
@@ -121,10 +134,10 @@ const normalizeTriggers = (triggers: Triggers) => {
     if (trigger instanceof RegExp) {
       return (value = '') => {
         trigger.lastIndex = 0;
-        return trigger.exec(value);
+        return trigger.exec(value.trim());
       };
     }
     const regex = new RegExp(`^${trigger}$`);
-    return (value: string) => regex.exec(value);
+    return (value: string) => regex.exec(value.trim());
   });
 };

@@ -1,5 +1,6 @@
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
+  BotInfo,
   BotStartedUpdate,
   FilteredUpdate,
   MessageCallbackUpdate,
@@ -32,6 +33,7 @@ export class Context<U extends Update = Update> {
   constructor(
     readonly update: U,
     readonly api: Api,
+    readonly botInfo?: BotInfo,
   ) {}
 
   has<Ctx extends Context, Filter extends UpdateType | Guard<Ctx['update']>>(
@@ -48,6 +50,10 @@ export class Context<U extends Update = Update> {
     }
 
     return false;
+  }
+
+  get myId() {
+    return this.botInfo?.user_id;
   }
 
   get chatId() {
