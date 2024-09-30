@@ -101,7 +101,10 @@ const flatten = <Ctx extends Context>(mw: Middleware<Ctx>): MiddlewareFn<Ctx> =>
     : (ctx, next) => mw.middleware()(ctx, next);
 };
 
-const concat = <Ctx extends Context>(first: MiddlewareFn<Ctx>, andThen: MiddlewareFn<Ctx>): MiddlewareFn<Ctx> => {
+const concat = <Ctx extends Context>(
+  first: MiddlewareFn<Ctx>,
+  andThen: MiddlewareFn<Ctx>,
+): MiddlewareFn<Ctx> => {
   return async (ctx, next) => {
     let nextCalled = false;
     await first(ctx, async () => {
@@ -132,6 +135,7 @@ const normalizeTriggers = (triggers: Triggers) => {
   return (Array.isArray(triggers) ? triggers : [triggers]).map((trigger) => {
     if (trigger instanceof RegExp) {
       return (value = '') => {
+        // eslint-disable-next-line no-param-reassign
         trigger.lastIndex = 0;
         return trigger.exec(value.trim());
       };
