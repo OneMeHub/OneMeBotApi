@@ -1,5 +1,5 @@
 import { Api } from '../api';
-import type { FlattenReq } from '../types';
+import type { EditMessageDTO, FlattenReq } from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
 
 export class MessagesApi extends Api {
@@ -9,6 +9,13 @@ export class MessagesApi extends Api {
     return this._post('messages', {
       body,
       query: { chat_id, user_id, disable_link_preview },
+    });
+  };
+
+  edit = async ({ message_id, ...body }: FlattenReq<EditMessageDTO>) => {
+    return this._put('messages', {
+      query: { message_id },
+      body,
     });
   };
 

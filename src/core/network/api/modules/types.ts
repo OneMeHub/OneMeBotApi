@@ -2,7 +2,7 @@ import { ReqOptions } from '../client';
 import type { EditMyInfoDTO, EditMyInfoResponse, GetMyInfoResponse } from './bots/types';
 import type {
   DeleteMessageDTO,
-  DeleteMessageResponse,
+  DeleteMessageResponse, EditMessageDTO, EditMessageResponse,
   SendMessageDTO,
   SendMessageResponse,
 } from './messages/types';
@@ -35,6 +35,12 @@ export type ApiMethods = {
     me: {
       req: EditMyInfoDTO,
       res: EditMyInfoResponse,
+    }
+  },
+  PUT: {
+    messages: {
+      req: EditMessageDTO,
+      res: EditMessageResponse,
     }
   },
   DELETE: {

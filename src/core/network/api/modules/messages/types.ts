@@ -1,4 +1,5 @@
 import { AttachmentRequest, Message, MessageLinkType } from '../../types';
+import type { FlattenReq } from '../types';
 
 export type SendMessageDTO = {
   query: {
@@ -15,6 +16,8 @@ export type SendMessageDTO = {
   }
 };
 
+export type SendMessageExtra = Omit<FlattenReq<SendMessageDTO>, 'chat_id' | 'user_id'>;
+
 export type SendMessageResponse = Message;
 
 export type DeleteMessageDTO = {
@@ -23,6 +26,21 @@ export type DeleteMessageDTO = {
   }
 };
 
+export type DeleteMessageExtra = Omit<FlattenReq<DeleteMessageDTO>, 'message_id'>;
+
 export type DeleteMessageResponse =
+    | { success: true; }
+    | { success: false; message: string };
+
+export type EditMessageDTO = {
+  query: {
+    message_id: string
+  },
+  body: SendMessageDTO['body']
+};
+
+export type EditMessageExtra = Omit<FlattenReq<EditMessageDTO>, 'message_id'>;
+
+export type EditMessageResponse =
     | { success: true; }
     | { success: false; message: string };

@@ -40,6 +40,10 @@ export class Api {
     return this.callApi(method, { ...options, method: 'PATCH' });
   };
 
+  protected _put: ApiCallFn<'PUT'> = async (method, options) => {
+    return this.callApi(method, { ...options, method: 'PUT' });
+  };
+
   protected _delete: ApiCallFn<'DELETE'> = async (method, options) => {
     return this.callApi(method, { ...options, method: 'DELETE' });
   };

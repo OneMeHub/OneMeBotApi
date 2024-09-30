@@ -1,9 +1,9 @@
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
-  BotInfo,
+  BotInfo, EditMessageExtra,
   FilteredUpdate,
   Message,
-  MessageCallbackUpdate,
+  MessageCallbackUpdate, SendMessageExtra,
   Update,
   UpdateType,
 } from './core/network/api';
@@ -96,9 +96,14 @@ export class Context<U extends Update = Update> {
     return getMessageId(this.update) as GetMsgId<U>;
   }
 
-  reply = async (text: string) => {
+  reply = async (text: string, extra?: Omit<SendMessageExtra, 'text'>) => {
     this.assert(this.chatId, 'reply');
-    return this.api.sendMessageToChat(this.chatId, { text });
+    return this.api.sendMessageToChat(this.chatId, { text, ...extra });
+  };
+
+  editMessage = async (extra: EditMessageExtra) => {
+    this.assert(this.messageId, 'editMessage');
+    return this.api.editMessage(this.messageId, extra);
   };
 
   deleteMessage = async (messageId?: string) => {

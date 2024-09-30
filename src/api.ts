@@ -1,9 +1,11 @@
 import type { MaybeArray } from './core/helpers/types';
 
-import { Client, RawApi } from './core/network/api';
+import {
+  Client, EditMessageExtra, RawApi, SendMessageExtra,
+} from './core/network/api';
 import type {
   BotCommand, EditMyInfoDTO, FlattenReq,
-  GetUpdatesDTO, SendMessageDTO, UpdateType,
+  GetUpdatesDTO, UpdateType,
 } from './core/network/api';
 
 export class Api {
@@ -31,7 +33,7 @@ export class Api {
 
   sendMessageToChat = async (
     chatId: number,
-    extra: Omit<FlattenReq<SendMessageDTO>, 'user_id' | 'chat_id'> = {},
+    extra?: SendMessageExtra,
   ) => {
     return this.raw.messages.send({
       chat_id: chatId,
@@ -41,10 +43,20 @@ export class Api {
 
   sendMessageToUser = async (
     userId: number,
-    extra: Omit<FlattenReq<SendMessageDTO>, 'user_id' | 'chat_id'> = {},
+    extra?: SendMessageExtra,
   ) => {
     return this.raw.messages.send({
       user_id: userId,
+      ...extra,
+    });
+  };
+
+  editMessage = async (
+    messageId: string,
+    extra?: EditMessageExtra,
+  ) => {
+    return this.raw.messages.edit({
+      message_id: messageId,
       ...extra,
     });
   };
