@@ -39,4 +39,8 @@ export class Api {
   protected _patch: ApiCallFn<'PATCH'> = async (method, options) => {
     return this.callApi(method, { ...options, method: 'PATCH' });
   };
+
+  protected _delete: ApiCallFn<'DELETE'> = async (method, options) => {
+    return this.callApi(method, { ...options, method: 'DELETE' });
+  };
 }

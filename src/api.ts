@@ -49,6 +49,10 @@ export class Api {
     });
   };
 
+  deleteMessage = async (messageId: string) => {
+    return this.raw.messages.delete({ message_id: messageId });
+  };
+
   getUpdates = async (
     types: MaybeArray<UpdateType> = [],
     extra: Omit<FlattenReq<GetUpdatesDTO>, 'types'> = {},

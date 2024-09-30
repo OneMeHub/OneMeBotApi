@@ -46,3 +46,5 @@ export type Message = {
   url?: string | null;
   constructor?: MessageConstructor | null;
 };
+
+export type ConstructedMessage = Pick<Message, 'sender' | 'timestamp' | 'link' | 'body'>;

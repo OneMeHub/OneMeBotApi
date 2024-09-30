@@ -1,6 +1,6 @@
 import { Api } from '../api';
 import type { FlattenReq } from '../types';
-import type { SendMessageDTO } from './types';
+import type { SendMessageDTO, DeleteMessageDTO } from './types';
 
 export class MessagesApi extends Api {
   send = async ({
@@ -9,6 +9,12 @@ export class MessagesApi extends Api {
     return this._post('messages', {
       body,
       query: { chat_id, user_id, disable_link_preview },
+    });
+  };
+
+  delete = async ({ ...query }: FlattenReq<DeleteMessageDTO>) => {
+    return this._delete('messages', {
+      query,
     });
   };
 }

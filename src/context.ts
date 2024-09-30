@@ -1,12 +1,9 @@
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
   BotInfo,
-  BotStartedUpdate,
   FilteredUpdate,
+  Message,
   MessageCallbackUpdate,
-  MessageCreatedUpdate,
-  MessageEditedUpdate,
-  MessageRemovedUpdate,
   Update,
   UpdateType,
 } from './core/network/api';
@@ -21,13 +18,29 @@ export type FilteredContext<
   : Ctx & Context<Guarded<Filter>>;
 
 type GetMessage<U extends Update> =
-  | U extends MessageCallbackUpdate ? U['message']
-    : U extends MessageCreatedUpdate ? U['message']
+  | U extends MessageCallbackUpdate
+    ? MessageCallbackUpdate['message']
+    : U extends { message: Message }
+      ? Message
       : undefined;
 
 type GetChatId<U extends Update> =
-    | U extends MessageRemovedUpdate | BotStartedUpdate | MessageCreatedUpdate | MessageEditedUpdate ? number
-      : number | null | undefined;
+    | U extends { chat_id: number }
+      ? number
+      : U extends MessageCallbackUpdate
+        ? number | undefined
+        : U extends { message: Message }
+          ? number
+          : undefined;
+
+type GetMsgId<U extends Update> =
+    | U extends { message_id: string }
+      ? string
+      : U extends MessageCallbackUpdate
+        ? string | undefined
+        : U extends { message: Message }
+          ? string
+          : undefined;
 
 export class Context<U extends Update = Update> {
   constructor(
@@ -52,6 +65,21 @@ export class Context<U extends Update = Update> {
     return false;
   }
 
+  assert<T extends string | number | object>(
+    value: T | undefined,
+    method: string,
+  ): asserts value is T {
+    if (value === undefined) {
+      throw new TypeError(
+        `OneMe: "${method}" isn't available for "${this.updateType}"`,
+      );
+    }
+  }
+
+  get updateType() {
+    return this.update.update_type;
+  }
+
   get myId() {
     return this.botInfo?.user_id;
   }
@@ -64,9 +92,21 @@ export class Context<U extends Update = Update> {
     return getMessage(this.update) as GetMessage<U>;
   }
 
+  get messageId() {
+    return getMessageId(this.update) as GetMsgId<U>;
+  }
+
   reply = async (text: string) => {
-    if (!this.chatId) return;
-    await this.api.sendMessageToChat(this.chatId, { text });
+    this.assert(this.chatId, 'reply');
+    return this.api.sendMessageToChat(this.chatId, { text });
+  };
+
+  deleteMessage = async (messageId?: string) => {
+    if (messageId !== undefined) {
+      return this.api.deleteMessage(messageId);
+    }
+    this.assert(this.messageId, 'deleteMessage');
+    return this.api.deleteMessage(this.messageId);
   };
 }
 
@@ -74,14 +114,27 @@ const getChatId = (update: Update) => {
   if ('chat_id' in update) {
     return update.chat_id;
   }
-
-  if ('message' in update) {
-    return update.message?.recipient?.chat_id;
+  if ('message' in update && update.message && 'recipient' in update.message) {
+    return update.message.recipient.chat_id;
   }
+  return undefined;
 };
 
 const getMessage = (update: Update) => {
   if ('message' in update) {
     return update.message;
   }
+  return undefined;
+};
+
+const getMessageId = (update: Update) => {
+  if ('message_id' in update) {
+    return update.message_id;
+  }
+
+  if ('message' in update) {
+    return update.message?.body.mid;
+  }
+
+  return undefined;
 };

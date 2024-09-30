@@ -1,6 +1,11 @@
 import { ReqOptions } from '../client';
 import type { EditMyInfoDTO, EditMyInfoResponse, GetMyInfoResponse } from './bots/types';
-import type { SendMessageDTO, SendMessageResponse } from './messages/types';
+import type {
+  DeleteMessageDTO,
+  DeleteMessageResponse,
+  SendMessageDTO,
+  SendMessageResponse,
+} from './messages/types';
 import type { GetUpdatesDTO, GetUpdatesResponse } from './subscriptions/types';
 
 export * from './bots/types';
@@ -32,4 +37,10 @@ export type ApiMethods = {
       res: EditMyInfoResponse,
     }
   },
+  DELETE: {
+    messages: {
+      req: DeleteMessageDTO,
+      res: DeleteMessageResponse,
+    }
+  }
 };

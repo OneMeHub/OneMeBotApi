@@ -4,7 +4,7 @@ export type NullableObject<T> = {
 
 export type MaybeArray<T> = T | T[];
 
-export type UnionKeys<T> = T extends unknown ? keyof T : never;
+export type MaybePromise<T> = T | Promise<T>;
 
 export type Guard<X = unknown, Y extends X = X> = (x: X) => x is Y;
 

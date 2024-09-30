@@ -16,3 +16,13 @@ export type SendMessageDTO = {
 };
 
 export type SendMessageResponse = Message;
+
+export type DeleteMessageDTO = {
+  query: {
+    message_id: string;
+  }
+};
+
+export type DeleteMessageResponse =
+    | { success: true; }
+    | { success: false; message: string };
