@@ -1,4 +1,5 @@
 export * from './attachment';
+export * from './attachment-request';
 export * from './bot';
 export * from './chat';
 export * from './keyboard';

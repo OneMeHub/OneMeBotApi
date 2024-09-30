@@ -1,4 +1,4 @@
-import { Attachment, Message, MessageLinkType } from '../../types';
+import { AttachmentRequest, Message, MessageLinkType } from '../../types';
 
 export type SendMessageDTO = {
   query: {
@@ -8,7 +8,7 @@ export type SendMessageDTO = {
   },
   body: {
     text?: string | null;
-    attachments?: Attachment[] | null;
+    attachments?: AttachmentRequest[] | null;
     link?: { type: MessageLinkType; mid: string } | null;
     notify?: boolean;
     format?: 'markdown' | 'html' | null;

@@ -64,7 +64,6 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
       if (!text.startsWith('/')) return next();
       const cmd = text.slice(1);
       for (const trigger of normalizeTriggers(command)) {
-        console.log(trigger(cmd));
         if (trigger(cmd)) {
           return handler(ctx, next);
         }
