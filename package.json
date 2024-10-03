@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/node": "^22.5.5",
+    "@types/vcf": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.2.0",
@@ -49,6 +50,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "debug": "^4.3.7"
+    "debug": "^4.3.7",
+    "vcf": "^2.1.2"
   }
 }

@@ -1,3 +1,4 @@
+import vCard from 'vcf';
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
   AnswerOnCallbackExtra,
@@ -108,6 +109,10 @@ export class Context<U extends Update = Update> {
     return getCallback(this.update) as GetCallback<U>;
   }
 
+  get contactInfo() {
+    return getContactInfo(this.update);
+  }
+
   reply = async (text: string, extra?: Omit<SendMessageExtra, 'text'>) => {
     this.assert(this.chatId, 'reply');
     return this.api.sendMessageToChat(this.chatId, { text, ...extra });
@@ -167,4 +172,19 @@ const getCallback = (update: Update) => {
   }
 
   return undefined;
+};
+
+const getContactInfo = (update: Update) => {
+  const message = getMessage(update);
+  if (!message) return undefined;
+  const contact = message.body.attachments?.find((attachment) => {
+    return attachment.type === 'contact';
+  });
+  if (!contact?.payload.vcf_info) return undefined;
+  // eslint-disable-next-line new-cap
+  const vcf = new vCard().parse(contact.payload.vcf_info);
+  return {
+    tel: vcf.get('tel').valueOf(),
+    fullName: vcf.get('fn').valueOf(),
+  };
 };
