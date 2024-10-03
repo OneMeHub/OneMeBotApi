@@ -44,3 +44,19 @@ export type EditMessageExtra = Omit<FlattenReq<EditMessageDTO>, 'message_id'>;
 export type EditMessageResponse =
     | { success: true; }
     | { success: false; message: string };
+
+export type AnswerOnCallbackDTO = {
+  query: {
+    callback_id: string
+  },
+  body: {
+    message?: SendMessageDTO['body'] | null,
+    notification?: string | null
+  }
+};
+
+export type AnswerOnCallbackExtra = Omit<FlattenReq<AnswerOnCallbackDTO>, 'callback_id'>;
+
+export type AnswerOnCallbackResponse =
+    | { success: true; }
+    | { success: false; message: string };

@@ -1,5 +1,5 @@
 import { Api } from '../api';
-import type { EditMessageDTO, FlattenReq } from '../types';
+import type { AnswerOnCallbackDTO, EditMessageDTO, FlattenReq } from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
 
 export class MessagesApi extends Api {
@@ -22,6 +22,13 @@ export class MessagesApi extends Api {
   delete = async ({ ...query }: FlattenReq<DeleteMessageDTO>) => {
     return this._delete('messages', {
       query,
+    });
+  };
+
+  answerOnCallback = async ({ callback_id, ...body }: FlattenReq<AnswerOnCallbackDTO>) => {
+    return this._post('answers', {
+      query: { callback_id },
+      body,
     });
   };
 }

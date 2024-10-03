@@ -1,7 +1,8 @@
 import type { MaybeArray } from './core/helpers/types';
 
 import {
-  Client, EditMessageExtra, RawApi, SendMessageExtra,
+  AnswerOnCallbackExtra,
+  Client, DeleteMessageExtra, EditMessageExtra, RawApi, SendMessageExtra,
 } from './core/network/api';
 import type {
   BotCommand, EditMyInfoDTO, FlattenReq,
@@ -61,8 +62,18 @@ export class Api {
     });
   };
 
-  deleteMessage = async (messageId: string) => {
-    return this.raw.messages.delete({ message_id: messageId });
+  deleteMessage = async (
+    messageId: string,
+    extra?: DeleteMessageExtra,
+  ) => {
+    return this.raw.messages.delete({ message_id: messageId, ...extra });
+  };
+
+  answerOnCallback = async (
+    callbackId: string,
+    extra?: AnswerOnCallbackExtra,
+  ) => {
+    return this.raw.messages.answerOnCallback({ callback_id: callbackId, ...extra });
   };
 
   getUpdates = async (

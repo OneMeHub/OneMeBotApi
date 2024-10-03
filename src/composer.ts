@@ -89,6 +89,26 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     }));
   };
 
+  action = (
+    triggers: Triggers,
+    ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_callback'>>>
+  ) => {
+    const normalizedTriggers = normalizeTriggers(triggers);
+    const handler = Composer.compose(middlewares);
+
+    return this.use(this.filter('message_callback', (ctx, next) => {
+      const { payload } = ctx.update.callback;
+
+      if (!payload) return next();
+
+      for (const trigger of normalizedTriggers) {
+        if (trigger(payload)) return handler(ctx, next);
+      }
+
+      return next();
+    }));
+  };
+
   filter = <Filter extends UpdateFilter<Ctx>>(
     filters: MaybeArray<Filter>,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, Filter>>>

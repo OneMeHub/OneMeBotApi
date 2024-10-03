@@ -1,9 +1,12 @@
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
-  BotInfo, EditMessageExtra,
+  AnswerOnCallbackExtra,
+  BotInfo,
+  EditMessageExtra,
   FilteredUpdate,
   Message,
-  MessageCallbackUpdate, SendMessageExtra,
+  MessageCallbackUpdate,
+  SendMessageExtra,
   Update,
   UpdateType,
 } from './core/network/api';
@@ -41,6 +44,11 @@ type GetMsgId<U extends Update> =
         : U extends { message: Message }
           ? string
           : undefined;
+
+type GetCallback<U extends Update> =
+    | U extends MessageCallbackUpdate
+      ? MessageCallbackUpdate['callback']
+      : undefined;
 
 export class Context<U extends Update = Update> {
   constructor(
@@ -96,6 +104,10 @@ export class Context<U extends Update = Update> {
     return getMessageId(this.update) as GetMsgId<U>;
   }
 
+  get callback() {
+    return getCallback(this.update) as GetCallback<U>;
+  }
+
   reply = async (text: string, extra?: Omit<SendMessageExtra, 'text'>) => {
     this.assert(this.chatId, 'reply');
     return this.api.sendMessageToChat(this.chatId, { text, ...extra });
@@ -112,6 +124,11 @@ export class Context<U extends Update = Update> {
     }
     this.assert(this.messageId, 'deleteMessage');
     return this.api.deleteMessage(this.messageId);
+  };
+
+  answerOnCallback = async (extra: AnswerOnCallbackExtra) => {
+    this.assert(this.callback, 'answerOnCallback');
+    return this.api.answerOnCallback(this.callback.callback_id, extra);
   };
 }
 
@@ -139,6 +156,14 @@ const getMessageId = (update: Update) => {
 
   if ('message' in update) {
     return update.message?.body.mid;
+  }
+
+  return undefined;
+};
+
+const getCallback = (update: Update) => {
+  if ('callback' in update) {
+    return update.callback;
   }
 
   return undefined;

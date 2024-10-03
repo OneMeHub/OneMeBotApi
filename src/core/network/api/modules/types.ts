@@ -1,6 +1,7 @@
 import { ReqOptions } from '../client';
 import type { EditMyInfoDTO, EditMyInfoResponse, GetMyInfoResponse } from './bots/types';
 import type {
+  AnswerOnCallbackDTO, AnswerOnCallbackResponse,
   DeleteMessageDTO,
   DeleteMessageResponse, EditMessageDTO, EditMessageResponse,
   SendMessageDTO,
@@ -34,6 +35,10 @@ export type ApiMethods = {
     uploads: {
       req: GetUploadUrlDTO,
       res: GetUploadUrlResponse,
+    },
+    answers: {
+      req: AnswerOnCallbackDTO,
+      res: AnswerOnCallbackResponse,
     }
   },
   PATCH: {
