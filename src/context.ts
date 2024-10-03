@@ -51,6 +51,23 @@ type GetCallback<U extends Update> =
       ? MessageCallbackUpdate['callback']
       : undefined;
 
+type ContactInfo = {
+  tel?: string,
+  fullName?: string,
+};
+
+type Location = {
+  latitude: number
+  longitude: number
+};
+
+type Sticker = {
+  width: number;
+  height: number;
+  url: string;
+  code: string;
+};
+
 export class Context<U extends Update = Update> {
   constructor(
     readonly update: U,
@@ -109,8 +126,22 @@ export class Context<U extends Update = Update> {
     return getCallback(this.update) as GetCallback<U>;
   }
 
+  private _contactInfo?: ContactInfo;
+
   get contactInfo() {
-    return getContactInfo(this.update);
+    return (this._contactInfo ??= getContactInfo(this.update));
+  }
+
+  private _location?: Location;
+
+  get location() {
+    return (this._location ??= getLocation(this.update));
+  }
+
+  private _sticker?: Sticker;
+
+  get sticker() {
+    return (this._sticker ??= getSticker(this.update));
   }
 
   reply = async (text: string, extra?: Omit<SendMessageExtra, 'text'>) => {
@@ -170,11 +201,10 @@ const getCallback = (update: Update) => {
   if ('callback' in update) {
     return update.callback;
   }
-
   return undefined;
 };
 
-const getContactInfo = (update: Update) => {
+const getContactInfo = (update: Update): ContactInfo | undefined => {
   const message = getMessage(update);
   if (!message) return undefined;
   const contact = message.body.attachments?.find((attachment) => {
@@ -184,7 +214,39 @@ const getContactInfo = (update: Update) => {
   // eslint-disable-next-line new-cap
   const vcf = new vCard().parse(contact.payload.vcf_info);
   return {
-    tel: vcf.get('tel').valueOf(),
-    fullName: vcf.get('fn').valueOf(),
+    tel: vcf.get('tel').valueOf() as string | undefined,
+    fullName: vcf.get('fn').valueOf() as string | undefined,
+  };
+};
+
+const getLocation = (update: Update): Location | undefined => {
+  const message = getMessage(update);
+  if (!message) return undefined;
+  const location = message.body.attachments?.find((attachment) => {
+    return attachment.type === 'location';
+  });
+  if (!location) return undefined;
+  return {
+    latitude: location.latitude,
+    longitude: location.longitude,
+  };
+};
+
+const getSticker = (update: Update): Sticker | undefined => {
+  const message = getMessage(update);
+
+  if (!message) return undefined;
+
+  const sticker = message.body.attachments?.find((attachment) => {
+    return attachment.type === 'sticker';
+  });
+
+  if (!sticker) return undefined;
+
+  return {
+    width: sticker.width,
+    height: sticker.height,
+    url: sticker.payload.url,
+    code: sticker.payload.code,
   };
 };

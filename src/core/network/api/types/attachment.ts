@@ -38,7 +38,12 @@ export type FileAttachment = {
 
 export type StickerAttachment = {
   type: 'sticker';
-  payload: MediaPayload;
+  payload: {
+    url: string;
+    code: string
+  };
+  width: number;
+  height: number;
 };
 
 export type ContactAttachment = {

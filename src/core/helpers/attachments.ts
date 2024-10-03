@@ -1,31 +1,19 @@
 import * as fs from 'node:fs';
 
 import { type Api } from '../../api';
+import { sleep, streamToBlob } from '../../utils';
 import {
+  type AudioAttachmentRequest,
   type FileAttachmentRequest,
   type ImageAttachmentRequest,
+  type StickerAttachmentRequest,
   type VideoAttachmentRequest,
   type UploadType,
 } from '../network/api';
 
 type FileSource = string | Buffer | fs.ReadStream;
 
-const MAX_RETRIES = 5;
-
-const streamToBlob = async (stream: fs.ReadStream, mimeType?: string) => {
-  return new Promise<Blob>((resolve, reject) => {
-    const chunks: Array<string | Buffer> = [];
-    stream
-      .on('data', (chunk) => chunks.push(chunk))
-      .once('end', () => {
-        const blob = mimeType
-          ? new Blob(chunks, { type: mimeType })
-          : new Blob(chunks);
-        resolve(blob);
-      })
-      .once('error', reject);
-  });
-};
+const MAX_ATTEMPTS = 5;
 
 export class MediaAttachment {
   constructor(private readonly api: Api) {}
@@ -43,8 +31,18 @@ export class MediaAttachment {
     return streamToBlob(source);
   };
 
+  private getUploadStatus = async (uploadUrl: string) => {
+    const res = await fetch(uploadUrl);
+    const progress = await res.text();
+
+    return {
+      status: res.status,
+      progress,
+    };
+  };
+
   private upload = async <Res>(type: UploadType, blob: Blob, initialRetries?: number) => {
-    if (initialRetries === MAX_RETRIES) {
+    if (initialRetries === MAX_ATTEMPTS) {
       throw new Error('Max retries reached');
     }
 
@@ -53,12 +51,35 @@ export class MediaAttachment {
 
     const { url: uploadUrl } = await this.api.raw.uploads.getUploadUrl({ type });
 
-    const res = await fetch(uploadUrl, {
-      method: 'POST',
-      body,
-    });
+    const uploadController = new AbortController();
+    const uploadInterval = setTimeout(() => uploadController.abort(), 20_000);
 
-    return await res.json() as Res;
+    try {
+      const res = await fetch(uploadUrl, {
+        method: 'POST',
+        body,
+        signal: uploadController.signal,
+      });
+
+      const result = await res.json() as Res;
+
+      let { progress } = await this.getUploadStatus(uploadUrl);
+
+      let attempts = 0;
+
+      while (progress && attempts <= MAX_ATTEMPTS) {
+        await sleep(1500);
+        const { progress: newProgress } = await this.getUploadStatus(uploadUrl);
+        if (progress === newProgress) {
+          attempts += 1;
+        }
+        progress = newProgress;
+      }
+
+      return result;
+    } finally {
+      clearTimeout(uploadInterval);
+    }
   };
 
   uploadImage = async (
@@ -110,4 +131,29 @@ export class MediaAttachment {
       payload: { token: data.token },
     };
   };
+
+  uploadAudio = async (options: { source: FileSource }): Promise<AudioAttachmentRequest> => {
+    const fileBlob = await this.getBlobFromSource(options.source);
+
+    const data = await this.upload<{
+      id: number,
+      token: string,
+    }>('audio', fileBlob);
+
+    return {
+      type: 'audio',
+      payload: { token: data.token },
+    };
+  };
+}
+
+export class StickerAttachment {
+  private readonly type = 'sticker';
+
+  getByCode(code: string): StickerAttachmentRequest {
+    return {
+      type: this.type,
+      payload: { code },
+    };
+  }
 }

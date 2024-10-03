@@ -12,6 +12,7 @@
     "@typescript-eslint/no-use-before-define": "off",
     "arrow-body-style": "off",
     "no-restricted-syntax": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "max-classes-per-file": "off"
   }
 }
