@@ -7,6 +7,7 @@ import type {
   SendMessageResponse,
 } from './messages/types';
 import type { GetUpdatesDTO, GetUpdatesResponse } from './subscriptions/types';
+import { GetUploadUrlResponse, GetUploadUrlDTO } from './uploads/types';
 
 export * from './bots/types';
 export * from './messages/types';
@@ -29,6 +30,10 @@ export type ApiMethods = {
     messages: {
       req: SendMessageDTO,
       res: SendMessageResponse,
+    },
+    uploads: {
+      req: GetUploadUrlDTO,
+      res: GetUploadUrlResponse,
     }
   },
   PATCH: {

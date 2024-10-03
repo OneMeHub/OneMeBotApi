@@ -6,4 +6,5 @@ export * from './keyboard';
 export * from './markup';
 export * from './message';
 export * from './subcription';
+export * from './uploads';
 export * from './user';

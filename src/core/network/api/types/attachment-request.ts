@@ -6,7 +6,7 @@ type MediaPayloadRequest = {
   token?: string;
 };
 
-export type PhotoAttachmentRequest = {
+export type ImageAttachmentRequest = {
   type: 'image';
   payload: MediaPayloadRequest & {
     url?: string | null;
@@ -69,7 +69,7 @@ export type ShareAttachmentRequest = {
 };
 
 export type AttachmentRequest =
-    | PhotoAttachmentRequest
+    | ImageAttachmentRequest
     | VideoAttachmentRequest
     | AudioAttachmentRequest
     | FileAttachmentRequest
@@ -78,3 +78,5 @@ export type AttachmentRequest =
     | InlineKeyboardAttachmentRequest
     | ShareAttachmentRequest
     | LocationAttachmentRequest;
+
+export type AttachmentType = AttachmentRequest['type'];
