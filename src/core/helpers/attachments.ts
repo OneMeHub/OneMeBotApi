@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import path from 'node:path';
 
 import { type Api } from '../../api';
-import { sleep, streamToBlob } from '../../utils';
+import { streamToBlob } from '../../utils';
 import {
   type AudioAttachmentRequest,
   type FileAttachmentRequest,
   type ImageAttachmentRequest,
   type StickerAttachmentRequest,
-  type VideoAttachmentRequest,
   type UploadType,
+  type VideoAttachmentRequest,
 } from '../network/api';
 
 type FileSource = string | Buffer | fs.ReadStream;
@@ -27,8 +27,6 @@ type UploadFromUrlOptions = {
 };
 
 type UploadFromUrlOrSourceOptions = UploadFromSourceOptions | UploadFromUrlOptions;
-
-const MAX_ATTEMPTS = 5;
 
 const DEFAULT_UPLOAD_TIMEOUT = 20_000; // ms
 
@@ -67,16 +65,6 @@ export class MediaAttachment {
     };
   };
 
-  private getUploadStatus = async (uploadUrl: string) => {
-    const res = await fetch(uploadUrl);
-    const progress = await res.text();
-
-    return {
-      status: res.status,
-      progress,
-    };
-  };
-
   private upload = async <Res>(type: UploadType, file: FileBlob, options?: DefaultOptions) => {
     const fd = new FormData();
     fd.append('data', file.source, file.fileName);
@@ -96,22 +84,7 @@ export class MediaAttachment {
         signal: uploadController.signal,
       });
 
-      const result = await res.json() as Res;
-
-      let { progress } = await this.getUploadStatus(uploadUrl);
-
-      let attempts = 0;
-
-      while (progress && attempts <= MAX_ATTEMPTS) {
-        await sleep(500 * (attempts + 1));
-        const { progress: newProgress } = await this.getUploadStatus(uploadUrl);
-        if (progress === newProgress) {
-          attempts += 1;
-        }
-        progress = newProgress;
-      }
-
-      return result;
+      return await res.json() as Res;
     } finally {
       clearTimeout(uploadInterval);
     }

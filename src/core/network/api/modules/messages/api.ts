@@ -1,3 +1,5 @@
+import { sleep } from '../../../../../utils';
+import { TamTamError } from '../../error';
 import { Api } from '../api';
 import type { AnswerOnCallbackDTO, EditMessageDTO, FlattenReq } from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
@@ -6,10 +8,23 @@ export class MessagesApi extends Api {
   send = async ({
     chat_id, user_id, disable_link_preview, ...body
   }: FlattenReq<SendMessageDTO>) => {
-    return this._post('messages', {
-      body,
-      query: { chat_id, user_id, disable_link_preview },
-    });
+    try {
+      return await this._post('messages', {
+        body,
+        query: { chat_id, user_id, disable_link_preview },
+      });
+    } catch (err) {
+      if (err instanceof TamTamError) {
+        if (err.code === 'attachment.not.ready') {
+          console.log('Attachment not ready');
+          await sleep(1000);
+          return this.send({
+            chat_id, user_id, disable_link_preview, ...body,
+          });
+        }
+      }
+      throw err;
+    }
   };
 
   edit = async ({ message_id, ...body }: FlattenReq<EditMessageDTO>) => {

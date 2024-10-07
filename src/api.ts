@@ -2,7 +2,11 @@ import type { MaybeArray } from './core/helpers/types';
 
 import {
   AnswerOnCallbackExtra,
-  Client, DeleteMessageExtra, EditMessageExtra, RawApi, SendMessageExtra,
+  Client,
+  DeleteMessageExtra,
+  EditMessageExtra,
+  RawApi,
+  SendMessageExtra,
 } from './core/network/api';
 import type {
   BotCommand, EditMyInfoDTO, FlattenReq,
