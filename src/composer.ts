@@ -58,11 +58,14 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     return this.use(this.filter(filter, (ctx, next) => {
       const text = extractTextFromMessage(ctx.message, ctx.myId)!;
 
-      if (!text.startsWith('/')) return next();
       const cmd = text.slice(1);
 
       for (const trigger of normalizedTriggers) {
-        if (trigger(cmd)) return handler(ctx, next);
+        const match = trigger(cmd);
+        if (match) {
+          ctx.match = match;
+          return handler(ctx, next);
+        }
       }
 
       return next();
@@ -82,7 +85,11 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
       const text = extractTextFromMessage(ctx.message, ctx.myId)!;
 
       for (const trigger of normalizedTriggers) {
-        if (trigger(text)) return handler(ctx, next);
+        const match = trigger(text);
+        if (match) {
+          ctx.match = match;
+          return handler(ctx, next);
+        }
       }
 
       return next();
@@ -102,7 +109,11 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
       if (!payload) return next();
 
       for (const trigger of normalizedTriggers) {
-        if (trigger(payload)) return handler(ctx, next);
+        const match = trigger(payload);
+        if (match) {
+          ctx.match = match;
+          return handler(ctx, next);
+        }
       }
 
       return next();
@@ -172,10 +183,13 @@ const normalizeTriggers = (triggers: Triggers) => {
 
 const extractTextFromMessage = (message: Message, myId?: number) => {
   const { text } = message.body;
-  const mention = message.body.markup?.[0];
+
+  const mention = message.body.markup?.find((m) => {
+    return m.type === 'user_mention';
+  });
 
   if (
-    mention?.type === 'user_mention'
+    mention
     && mention.from === 0
     && mention.user_id === myId
   ) {

@@ -9,7 +9,7 @@ import type {
   MessageCallbackUpdate,
   SendMessageExtra,
   Update,
-  UpdateType,
+  UpdateType, User,
 } from './core/network/api';
 
 import { type Api } from './api';
@@ -51,6 +51,13 @@ type GetCallback<U extends Update> =
       ? MessageCallbackUpdate['callback']
       : undefined;
 
+type GetUser<U extends Update> =
+    | U extends { user: User }
+      ? User
+      : U extends MessageCallbackUpdate
+        ? User
+        : undefined;
+
 type ContactInfo = {
   tel?: string,
   fullName?: string,
@@ -69,6 +76,8 @@ type Sticker = {
 };
 
 export class Context<U extends Update = Update> {
+  match?: RegExpExecArray;
+
   constructor(
     readonly update: U,
     readonly api: Api,
@@ -124,6 +133,10 @@ export class Context<U extends Update = Update> {
 
   get callback() {
     return getCallback(this.update) as GetCallback<U>;
+  }
+
+  get user() {
+    return getUser(this.update) as GetUser<U>;
   }
 
   private _contactInfo?: ContactInfo;
@@ -234,19 +247,27 @@ const getLocation = (update: Update): Location | undefined => {
 
 const getSticker = (update: Update): Sticker | undefined => {
   const message = getMessage(update);
-
   if (!message) return undefined;
-
   const sticker = message.body.attachments?.find((attachment) => {
     return attachment.type === 'sticker';
   });
-
   if (!sticker) return undefined;
-
   return {
     width: sticker.width,
     height: sticker.height,
     url: sticker.payload.url,
     code: sticker.payload.code,
   };
+};
+
+const getUser = (update: Update): User | undefined => {
+  if ('user' in update) {
+    return update.user;
+  }
+
+  if (update.update_type === 'message_callback') {
+    return update.callback.user;
+  }
+
+  return undefined;
 };
