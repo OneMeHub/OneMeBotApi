@@ -1,5 +1,5 @@
 import { sleep } from '../../../../../utils';
-import { TamTamError } from '../../error';
+import { OneMeError } from '../../error';
 import { Api } from '../api';
 import type { AnswerOnCallbackDTO, EditMessageDTO, FlattenReq } from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
@@ -14,7 +14,7 @@ export class MessagesApi extends Api {
         query: { chat_id, user_id, disable_link_preview },
       });
     } catch (err) {
-      if (err instanceof TamTamError) {
+      if (err instanceof OneMeError) {
         if (err.code === 'attachment.not.ready') {
           console.log('Attachment not ready');
           await sleep(1000);

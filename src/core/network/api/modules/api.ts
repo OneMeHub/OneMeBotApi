@@ -1,5 +1,5 @@
 import type { Client, ReqOptions } from '../client';
-import { TamTamError } from '../error';
+import { OneMeError } from '../error';
 
 import type { ApiMethods } from './types';
 
@@ -23,7 +23,7 @@ export class Api {
       options,
     });
     if (result.status !== 200) {
-      throw new TamTamError(result.status, result.data);
+      throw new OneMeError(result.status, result.data);
     }
     return result.data;
   };

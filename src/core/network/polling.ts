@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 
 import type { Api } from '../../api';
-import { TamTamError, Update, UpdateType } from './api';
+import { OneMeError, Update, UpdateType } from './api';
 
 const debug = createDebug('one-me:polling');
 
@@ -31,8 +31,8 @@ export class Polling {
           if (err.name === 'AbortError') return;
           if (
             err.name === 'FetchError'
-              || (err instanceof TamTamError && err.status === 429)
-              || (err instanceof TamTamError && err.status >= 500)
+              || (err instanceof OneMeError && err.status === 429)
+              || (err instanceof OneMeError && err.status >= 500)
           ) {
             debug(`Failed to fetch updates, retrying after ${RETRY_INTERVAL}ms.`, err);
             await new Promise((resolve) => {
