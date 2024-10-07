@@ -5,6 +5,8 @@ import { TamTamError, Update, UpdateType } from './api';
 
 const debug = createDebug('one-me:polling');
 
+const RETRY_INTERVAL = 5_000; // ms
+
 export class Polling {
   private readonly abortController = new AbortController();
 
@@ -32,10 +34,9 @@ export class Polling {
               || (err instanceof TamTamError && err.status === 429)
               || (err instanceof TamTamError && err.status >= 500)
           ) {
-            const retryAfter = 5;
-            debug(`Failed to fetch updates, retrying after ${retryAfter}s.`, retryAfter, err);
+            debug(`Failed to fetch updates, retrying after ${RETRY_INTERVAL}ms.`, err);
             await new Promise((resolve) => {
-              setTimeout(resolve, retryAfter * 1000);
+              setTimeout(resolve, RETRY_INTERVAL);
             });
             return;
           }
