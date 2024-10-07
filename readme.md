@@ -31,7 +31,7 @@ import { Bot } from 'one-me-bot-api';
 
 const bot = new Bot(process.env.BOT_TOKEN);
 
-// Устанавливаем подсказки с доступными командами
+// Установка подсказок с доступными командами
 bot.api.setMyCommands([
   { 
     name: 'ping',
@@ -39,16 +39,16 @@ bot.api.setMyCommands([
   },
 ]);
 
-// Устанавливаем обработчик события запуска бота
+// Обработчик события запуска бота
 bot.on('bot_started', (ctx) => ctx.reply('Привет! Отправь мне команду /ping, чтобы сыграть в пинг-понг'));
 
-// Устанавливаем обработчик команды '/ping'
+// Обработчик команды '/ping'
 bot.command('ping', (ctx) => ctx.reply('pong'));
 
-// Устанавливаем обработчик для сообщения с текстом 'hello'
+// Обработчик для сообщения с текстом 'hello'
 bot.hears('hello', (ctx) => ctx.reply('world'));
 
-// Устанавливаем обработчик для всех остальных входящих сообщений
+// Обработчик для всех остальных входящих сообщений
 bot.on('message_created', (ctx) => ctx.reply(ctx.message.body.text));
 
 bot.start();
