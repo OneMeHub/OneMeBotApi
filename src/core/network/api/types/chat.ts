@@ -1,16 +1,6 @@
-export const enum ChatType {
-  dialog = 'dialog',
-  chat = 'chat',
-  channel = 'channel',
-}
+export type ChatType = 'dialog' | 'chat' | 'channel';
 
-export const enum ChatStatus {
-  active = 'active',
-  removed = 'removed',
-  left = 'left',
-  closed = 'closed',
-  suspended = 'suspended',
-}
+export type ChatStatus = 'active' | 'removed' | 'left' | 'closed' | 'suspended';
 
 export type Chat = {
   chat_id: number;

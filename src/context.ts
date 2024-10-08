@@ -157,9 +157,9 @@ export class Context<U extends Update = Update> {
     return (this._sticker ??= getSticker(this.update));
   }
 
-  reply = async (text: string, extra?: Omit<SendMessageExtra, 'text'>) => {
+  reply = async (text: string, extra?: SendMessageExtra) => {
     this.assert(this.chatId, 'reply');
-    return this.api.sendMessageToChat(this.chatId, { text, ...extra });
+    return this.api.sendMessageToChat(this.chatId, text, extra);
   };
 
   editMessage = async (extra: EditMessageExtra) => {
@@ -267,6 +267,10 @@ const getUser = (update: Update): User | undefined => {
 
   if (update.update_type === 'message_callback') {
     return update.callback.user;
+  }
+
+  if (update.update_type === 'message_created') {
+    return update.message.sender || undefined;
   }
 
   return undefined;

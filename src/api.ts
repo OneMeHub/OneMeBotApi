@@ -1,23 +1,31 @@
-import type { MaybeArray } from './core/helpers/types';
-
 import {
-  AnswerOnCallbackExtra,
-  Client,
-  DeleteMessageExtra,
-  EditMessageExtra,
-  RawApi,
-  SendMessageExtra,
-} from './core/network/api';
+  AudioAttachment,
+  FileAttachment,
+  ImageAttachment,
+  VideoAttachment,
+} from './core/helpers/attachments';
+import type { MaybeArray } from './core/helpers/types';
+import { Upload } from './core/helpers/upload';
 import type {
-  BotCommand, EditMyInfoDTO, FlattenReq,
-  GetUpdatesDTO, UpdateType,
+  UploadFileOptions, UploadImageOptions, UploadVideoOptions, UploadAudioOptions,
+} from './core/helpers/upload';
+
+import { RawApi } from './core/network/api';
+
+import type {
+  AnswerOnCallbackExtra, Client, DeleteMessageExtra,
+  EditMessageExtra, SendMessageExtra, BotCommand,
+  EditMyInfoDTO, FlattenReq, GetUpdatesDTO, UpdateType,
 } from './core/network/api';
 
 export class Api {
   raw: RawApi;
 
+  upload: Upload;
+
   constructor(client: Client) {
     this.raw = new RawApi(client);
+    this.upload = new Upload(this);
   }
 
   getMyInfo = async () => {
@@ -38,22 +46,28 @@ export class Api {
 
   sendMessageToChat = async (
     chatId: number,
+    text: string,
     extra?: SendMessageExtra,
   ) => {
-    return this.raw.messages.send({
+    const { message } = await this.raw.messages.send({
       chat_id: chatId,
+      text,
       ...extra,
     });
+    return message;
   };
 
   sendMessageToUser = async (
     userId: number,
+    text: string,
     extra?: SendMessageExtra,
   ) => {
-    return this.raw.messages.send({
+    const { message } = await this.raw.messages.send({
       user_id: userId,
+      text,
       ...extra,
     });
+    return message;
   };
 
   editMessage = async (
@@ -88,5 +102,25 @@ export class Api {
       types: Array.isArray(types) ? types.join(',') : types,
       ...extra,
     });
+  };
+
+  uploadImage = async (options: UploadImageOptions) => {
+    const data = await this.upload.image(options);
+    return new ImageAttachment(data);
+  };
+
+  uploadVideo = async (options: UploadVideoOptions) => {
+    const data = await this.upload.video(options);
+    return new VideoAttachment({ token: data.token });
+  };
+
+  uploadAudio = async (options: UploadAudioOptions) => {
+    const data = await this.upload.audio(options);
+    return new AudioAttachment({ token: data.token });
+  };
+
+  uploadFile = async (options: UploadFileOptions) => {
+    const data = await this.upload.file(options);
+    return new FileAttachment({ token: data.token });
   };
 }

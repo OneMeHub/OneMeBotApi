@@ -16,7 +16,7 @@ export type SendMessageDTO = {
   }
 };
 
-export type SendMessageExtra = Omit<FlattenReq<SendMessageDTO>, 'chat_id' | 'user_id'>;
+export type SendMessageExtra = Omit<FlattenReq<SendMessageDTO>, 'chat_id' | 'user_id' | 'text'>;
 
 export type SendMessageResponse = {
   message: Message

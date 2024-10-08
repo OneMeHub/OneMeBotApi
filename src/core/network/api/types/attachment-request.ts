@@ -2,13 +2,13 @@ import { NullableObject } from '../../../helpers/types';
 
 import { Button } from './keyboard';
 
-type MediaPayloadRequest = {
+type MediaAttachmentRequestPayload = {
   token?: string;
 };
 
 export type ImageAttachmentRequest = {
   type: 'image';
-  payload: MediaPayloadRequest & {
+  payload: MediaAttachmentRequestPayload & {
     url?: string | null;
     photos?: {
       [key: string]: { token: string }
@@ -18,17 +18,17 @@ export type ImageAttachmentRequest = {
 
 export type VideoAttachmentRequest = {
   type: 'video';
-  payload: MediaPayloadRequest;
+  payload: MediaAttachmentRequestPayload;
 };
 
 export type AudioAttachmentRequest = {
   type: 'audio';
-  payload: MediaPayloadRequest;
+  payload: MediaAttachmentRequestPayload;
 };
 
 export type FileAttachmentRequest = {
   type: 'file';
-  payload: MediaPayloadRequest;
+  payload: MediaAttachmentRequestPayload;
 };
 
 export type ContactAttachmentRequest = {
@@ -63,7 +63,7 @@ export type LocationAttachmentRequest = {
 
 export type ShareAttachmentRequest = {
   type: 'share';
-  payload: Partial<NullableObject<MediaPayloadRequest> & {
+  payload: Partial<NullableObject<MediaAttachmentRequestPayload> & {
     url?: string | null;
   }>;
 };
