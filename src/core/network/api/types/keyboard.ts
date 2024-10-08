@@ -1,8 +1,4 @@
-export const enum ButtonIntent {
-  default = 'default',
-  positive = 'positive',
-  negative = 'negative',
-}
+export type ButtonIntent = 'default' | 'positive' | 'negative';
 
 export type CallbackButton = {
   type: 'callback';
@@ -29,6 +25,7 @@ export type RequestGeoLocationButton = {
 };
 
 export type ChatButton = {
+  type: 'chat',
   text: string;
   chat_title: string;
   chat_description?: string | null;

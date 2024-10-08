@@ -1,8 +1,8 @@
-import { Api } from '../api';
+import { BaseApi } from '../../base-api';
 import type { FlattenReq } from '../types';
 import type { EditMyInfoDTO } from './types';
 
-export class BotsApi extends Api {
+export class BotsApi extends BaseApi {
   getMyInfo = async () => {
     return this._get('me', {});
   };

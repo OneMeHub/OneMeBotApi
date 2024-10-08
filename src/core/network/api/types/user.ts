@@ -11,3 +11,7 @@ export type UserWithPhoto = User & {
   avatar_url?: string;
   full_avatar_url?: string;
 };
+
+export const enum UserLocale {
+
+}

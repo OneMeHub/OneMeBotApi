@@ -10,6 +10,9 @@
     "no-return-assign": "off",
     "no-underscore-dangle": ["error", {"allowAfterThis": true}],
     "@typescript-eslint/no-use-before-define": "off",
-    "arrow-body-style": "off"
+    "arrow-body-style": "off",
+    "no-restricted-syntax": "off",
+    "class-methods-use-this": "off",
+    "max-classes-per-file": "off"
   }
 }

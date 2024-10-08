@@ -1,7 +1,14 @@
 import { ReqOptions } from '../client';
 import type { EditMyInfoDTO, EditMyInfoResponse, GetMyInfoResponse } from './bots/types';
-import type { SendMessageDTO, SendMessageResponse } from './messages/types';
+import type {
+  AnswerOnCallbackDTO, AnswerOnCallbackResponse,
+  DeleteMessageDTO,
+  DeleteMessageResponse, EditMessageDTO, EditMessageResponse,
+  SendMessageDTO,
+  SendMessageResponse,
+} from './messages/types';
 import type { GetUpdatesDTO, GetUpdatesResponse } from './subscriptions/types';
+import { GetUploadUrlResponse, GetUploadUrlDTO } from './uploads/types';
 
 export * from './bots/types';
 export * from './messages/types';
@@ -24,6 +31,14 @@ export type ApiMethods = {
     messages: {
       req: SendMessageDTO,
       res: SendMessageResponse,
+    },
+    uploads: {
+      req: GetUploadUrlDTO,
+      res: GetUploadUrlResponse,
+    },
+    answers: {
+      req: AnswerOnCallbackDTO,
+      res: AnswerOnCallbackResponse,
     }
   },
   PATCH: {
@@ -32,4 +47,16 @@ export type ApiMethods = {
       res: EditMyInfoResponse,
     }
   },
+  PUT: {
+    messages: {
+      req: EditMessageDTO,
+      res: EditMessageResponse,
+    }
+  },
+  DELETE: {
+    messages: {
+      req: DeleteMessageDTO,
+      res: DeleteMessageResponse,
+    }
+  }
 };

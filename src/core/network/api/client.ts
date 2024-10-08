@@ -39,7 +39,7 @@ export const createClient = (token: string, options: ClientOptions = {}) => {
       };
     }
 
-    const url = new URL(`${method}?access_token=${token}`, baseUrl);
+    const url = new URL(buildUrl(method, token, callOptions.path), baseUrl);
 
     Object.keys(callOptions.query ?? {}).forEach((param) => {
       const value = callOptions.query?.[param];
@@ -80,4 +80,18 @@ const getResponseInit = (body?: ReqOptions['body']): RequestInit => {
       'content-type': 'application/json',
     },
   };
+};
+
+const buildUrl = (baseUrl: string, token: string, path?: ReqOptions['path']): string => {
+  let url = baseUrl;
+
+  if (path) {
+    Object.keys(path)?.forEach((key) => {
+      const regexp = new RegExp(`{{${key}}}`, 'g');
+      const value = path[key].toString();
+      url = url.replace(regexp, value);
+    });
+  }
+
+  return `${url}?access_token=${token}`;
 };

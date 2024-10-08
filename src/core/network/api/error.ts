@@ -3,7 +3,7 @@ export type ErrorResponse = {
   message: string;
 };
 
-export class TamTamError extends Error {
+export class OneMeError extends Error {
   constructor(
     public readonly status: number,
     private readonly response: ErrorResponse,

@@ -18,10 +18,7 @@ export type MessageBody = {
   markup?: MarkupElement[] | null;
 };
 
-export const enum MessageLinkType {
-  forward = 'forward',
-  reply = 'reply',
-}
+export type MessageLinkType = 'forward' | 'reply';
 
 export type LinkedMessage = {
   type: MessageLinkType;
@@ -46,3 +43,5 @@ export type Message = {
   url?: string | null;
   constructor?: MessageConstructor | null;
 };
+
+export type ConstructedMessage = Pick<Message, 'sender' | 'timestamp' | 'link' | 'body'>;

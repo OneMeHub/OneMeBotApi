@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import { Composer } from './composer';
 import { Context } from './context';
+import { MaybePromise } from './core/helpers/types';
 
 import {
   BotInfo, ClientOptions, createClient, Update, UpdateType,
@@ -45,6 +46,17 @@ export class Bot<Ctx extends Context = Context> extends Composer<Ctx> {
     debug('Created `Bot` instance');
   }
 
+  private handleError = (err: unknown, ctx: Ctx): MaybePromise<void> => {
+    process.exitCode = 1;
+    console.error('Unhandled error while processing', ctx.update);
+    throw err;
+  };
+
+  catch(handler: (err: unknown, ctx: Ctx) => MaybePromise<void>) {
+    this.handleError = handler;
+    return this;
+  }
+
   start = async (options?: LaunchOptions) => {
     if (this.pollingIsStarted) {
       debug('Long polling already running');
@@ -79,6 +91,8 @@ export class Bot<Ctx extends Context = Context> extends Composer<Ctx> {
 
     try {
       await this.middleware()(ctx, () => Promise.resolve(undefined));
+    } catch (err) {
+      await this.handleError(err, ctx);
     } finally {
       debug(`Finished processing update ${updateId}`);
     }
