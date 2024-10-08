@@ -1,15 +1,10 @@
 import vCard from 'vcf';
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
-  AnswerOnCallbackExtra,
-  BotInfo,
-  EditMessageExtra,
-  FilteredUpdate,
-  Message,
-  MessageCallbackUpdate,
-  SendMessageExtra,
-  Update,
-  UpdateType, User,
+  AnswerOnCallbackExtra, BotInfo, BotStartedUpdate,
+  EditMessageExtra, FilteredUpdate, Message,
+  MessageCallbackUpdate, SendMessageExtra,
+  Update, UpdateType, User,
 } from './core/network/api';
 
 import { type Api } from './api';
@@ -57,6 +52,11 @@ type GetUser<U extends Update> =
       : U extends MessageCallbackUpdate
         ? User
         : undefined;
+
+type GetStartPayload<U extends Update> =
+    | U extends BotStartedUpdate
+      ? string | undefined | null
+      : undefined;
 
 type ContactInfo = {
   tel?: string,
@@ -117,6 +117,10 @@ export class Context<U extends Update = Update> {
 
   get myId() {
     return this.botInfo?.user_id;
+  }
+
+  get startPayload() {
+    return getStartPayload(this.update) as GetStartPayload<U>;
   }
 
   get chatId() {
@@ -273,5 +277,12 @@ const getUser = (update: Update): User | undefined => {
     return update.message.sender || undefined;
   }
 
+  return undefined;
+};
+
+const getStartPayload = (update: Update): string | null | undefined => {
+  if (update.update_type === 'bot_started') {
+    return update.payload;
+  }
   return undefined;
 };
