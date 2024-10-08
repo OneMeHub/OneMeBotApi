@@ -1,4 +1,4 @@
-export { Api } from './api';
+export { BaseApi } from '../base-api';
 export { FlattenReq } from './types';
 
 export { BotsApi } from './bots/api';

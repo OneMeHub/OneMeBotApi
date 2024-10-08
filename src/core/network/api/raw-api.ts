@@ -1,9 +1,9 @@
 import type { Client } from './client';
 import {
-  Api, BotsApi, MessagesApi, SubscriptionsApi, UploadsApi,
+  BaseApi, BotsApi, MessagesApi, SubscriptionsApi, UploadsApi,
 } from './modules';
 
-export class RawApi extends Api {
+export class RawApi extends BaseApi {
   constructor(private readonly client: Client) {
     super(client);
   }

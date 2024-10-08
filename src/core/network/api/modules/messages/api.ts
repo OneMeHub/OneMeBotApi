@@ -1,10 +1,10 @@
 import { sleep } from '../../../../../utils';
 import { OneMeError } from '../../error';
-import { Api } from '../api';
+import { BaseApi } from '../../base-api';
 import type { FlattenReq, SendMessageResponse } from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
 
-export class MessagesApi extends Api {
+export class MessagesApi extends BaseApi {
   send = async ({
     chat_id, user_id, disable_link_preview, ...body
   }: FlattenReq<SendMessageDTO>): Promise<SendMessageResponse> => {

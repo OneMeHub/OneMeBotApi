@@ -1,7 +1,7 @@
-import type { Client, ReqOptions } from '../client';
-import { OneMeError } from '../error';
+import type { Client, ReqOptions } from './client';
+import { OneMeError } from './error';
 
-import type { ApiMethods } from './types';
+import type { ApiMethods } from './modules/types';
 
 type ApiCallFn<HTTPMethod extends keyof ApiMethods, Res = unknown> = <
   Method extends keyof ApiMethods[HTTPMethod],
@@ -17,7 +17,7 @@ type ApiCallFn<HTTPMethod extends keyof ApiMethods, Res = unknown> = <
   ? ApiMethods[HTTPMethod][MethodInput]['res']
   : Res>;
 
-export class Api {
+export class BaseApi {
   private readonly call: Client['call'];
 
   constructor(client: Client) {
