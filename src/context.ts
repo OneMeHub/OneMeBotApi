@@ -157,28 +157,28 @@ export class Context<U extends Update = Update> {
     return (this._sticker ??= getSticker(this.update));
   }
 
-  reply = async (text: string, extra?: SendMessageExtra) => {
+  async reply(text: string, extra?: SendMessageExtra) {
     this.assert(this.chatId, 'reply');
     return this.api.sendMessageToChat(this.chatId, text, extra);
-  };
+  }
 
-  editMessage = async (extra: EditMessageExtra) => {
+  async editMessage(extra: EditMessageExtra) {
     this.assert(this.messageId, 'editMessage');
     return this.api.editMessage(this.messageId, extra);
-  };
+  }
 
-  deleteMessage = async (messageId?: string) => {
+  async deleteMessage(messageId?: string) {
     if (messageId !== undefined) {
       return this.api.deleteMessage(messageId);
     }
     this.assert(this.messageId, 'deleteMessage');
     return this.api.deleteMessage(this.messageId);
-  };
+  }
 
-  answerOnCallback = async (extra: AnswerOnCallbackExtra) => {
+  async answerOnCallback(extra: AnswerOnCallbackExtra) {
     this.assert(this.callback, 'answerOnCallback');
     return this.api.answerOnCallback(this.callback.callback_id, extra);
-  };
+  }
 }
 
 const getChatId = (update: Update) => {

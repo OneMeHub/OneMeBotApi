@@ -30,26 +30,26 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
     this.handler = Composer.compose(middlewares);
   }
 
-  middleware = () => {
+  middleware() {
     return this.handler;
-  };
+  }
 
-  use = (...middlewares: Array<Middleware<Ctx>>) => {
+  use(...middlewares: Array<Middleware<Ctx>>) {
     this.handler = Composer.compose([this.handler, ...middlewares]);
     return this;
-  };
+  }
 
-  on = <Filter extends UpdateType | Guard<Ctx['update']>>(
+  on<Filter extends UpdateType | Guard<Ctx['update']>>(
     filters: MaybeArray<Filter>,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, Filter>>>
-  ) => {
+  ) {
     return this.use(this.filter(filters, ...middlewares));
-  };
+  }
 
-  command = (
+  command(
     command: Triggers,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_created'>>>
-  ) => {
+  ) {
     const normalizedTriggers = normalizeTriggers(command);
     const filter = createdMessageBodyHas('text');
 
@@ -70,12 +70,12 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
 
       return next();
     }));
-  };
+  }
 
-  hears = (
+  hears(
     triggers: Triggers,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_created'>>>
-  ) => {
+  ) {
     const normalizedTriggers = normalizeTriggers(triggers);
     const filter = createdMessageBodyHas('text');
 
@@ -94,12 +94,12 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
 
       return next();
     }));
-  };
+  }
 
-  action = (
+  action(
     triggers: Triggers,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, 'message_callback'>>>
-  ) => {
+  ) {
     const normalizedTriggers = normalizeTriggers(triggers);
     const handler = Composer.compose(middlewares);
 
@@ -118,28 +118,28 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
 
       return next();
     }));
-  };
+  }
 
-  filter = <Filter extends UpdateFilter<Ctx>>(
+  filter<Filter extends UpdateFilter<Ctx>>(
     filters: MaybeArray<Filter>,
     ...middlewares: Array<Middleware<FilteredContext<Ctx, Filter>>>
-  ): MiddlewareFn<Ctx> => {
+  ): MiddlewareFn<Ctx> {
     const handler = Composer.compose(middlewares);
     return (ctx, next) => {
       return ctx.has(filters) ? handler(ctx, next) : next();
     };
-  };
+  }
 
-  static flatten = <C extends Context>(mw: Middleware<C>): MiddlewareFn<C> => {
+  static flatten<C extends Context>(mw: Middleware<C>): MiddlewareFn<C> {
     return typeof mw === 'function'
       ? mw
       : (ctx, next) => mw.middleware()(ctx, next);
-  };
+  }
 
-  static concat = <C extends Context>(
+  static concat<C extends Context>(
     first: MiddlewareFn<C>,
     andThen: MiddlewareFn<C>,
-  ): MiddlewareFn<C> => {
+  ): MiddlewareFn<C> {
     return async (ctx, next) => {
       let nextCalled = false;
       await first(ctx, async () => {
@@ -150,13 +150,13 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
         await andThen(ctx, next);
       });
     };
-  };
+  }
 
-  static pass = <C extends Context>(_ctx: C, next: NextFn) => {
+  static pass<C extends Context>(_ctx: C, next: NextFn) {
     return next();
-  };
+  }
 
-  static compose = <C extends Context>(middlewares: Array<Middleware<C>>) => {
+  static compose<C extends Context>(middlewares: Array<Middleware<C>>) {
     if (!Array.isArray(middlewares)) {
       throw new Error('Middlewares must be an array');
     }
@@ -164,7 +164,7 @@ export class Composer<Ctx extends Context> implements MiddlewareObj<Ctx> {
       return Composer.pass;
     }
     return middlewares.map(Composer.flatten).reduce(Composer.concat);
-  };
+  }
 }
 
 const normalizeTriggers = (triggers: Triggers) => {
