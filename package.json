@@ -32,8 +32,6 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --watch ./src/ --watch .env ./src/index.ts",
-    "debug": "DEBUG=\"one-me:*\" npm run dev",
     "lint": "eslint ./src --ext ts --report-unused-disable-directives"
   },
   "devDependencies": {
