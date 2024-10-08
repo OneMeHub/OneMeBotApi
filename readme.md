@@ -2,7 +2,7 @@
 
 ## Документация
 
-В [документации]() вы можете найти подробные инструкции по использованию фреймворка.
+В [документации](https://github.com/OneMeHub/OneMeBotApi/tree/master/docs) вы можете найти подробные инструкции по использованию фреймворка.
 
 ## Быстрый старт
 
@@ -14,20 +14,20 @@
 ### Установка
 #### npm
 ```sh
-npm install one-me-bot-api
+npm install @onemehub/one-me-bot-api
 ```
 #### yarn
 ```sh
-yarn add one-me-bot-api
+yarn add @onemehub/one-me-bot-api
 ```
 #### pnpm
 ```sh
-pnpm add one-me-bot-api
+pnpm add @onemehub/one-me-bot-api
 ```
 
 ### Пример
 ```javascript
-import { Bot } from 'one-me-bot-api';
+import { Bot } from '@onemehub/one-me-bot-api';
 
 const bot = new Bot(process.env.BOT_TOKEN);
 

@@ -1,8 +1,8 @@
 {
-  "name": "one-me-bot-api",
+  "name": "@onemehub/one-me-bot-api",
   "version": "0.1.0",
   "description": "OneMe Bot Framework",
-  "repository": "https://gitlab.com/juicedev/oneme-bot-api-library",
+  "repository": "https://github.com/OneMeHub/OneMeBotApi",
   "author": "Juice Development",
   "license": "MIT",
   "engines": {
@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "debug": "^4.3.7",
+    "global": "^4.4.0",
+    "mit-license": "^1.0.0",
     "vcf": "^2.1.2"
   }
 }

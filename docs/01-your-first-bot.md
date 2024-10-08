@@ -9,7 +9,7 @@ mkdir my-first-bot
 cd my-first-bot
 
 # Установите OneMe Bot API
-yarn add one-me-bot-api
+yarn add @onemehub/one-me-bot-api
 
 # Установите и настройте TypeScript (опционально, но мы рекомендуем TypeScript вместо JavaScript)
 yarn add -D typescript
@@ -20,7 +20,7 @@ npx tsc --init
 
 Создайте экземпляр класса `Bot` и передайте токен в его конструктор. Мы рекомендуем передавать токен через переменные окружения. Если вы не знакомы с переменными окружения, то можете прочитать про них в [документации](https://nodejs.org/en/learn/command-line/how-to-read-environment-variables-from-nodejs). Для удобной работы с переменными окружения можно использовать библиотеку [`dotenv`](https://www.npmjs.com/package/dotenv). 
 ```typescript
-import { Bot } from 'one-me-bot-api';
+import { Bot } from '@onemehub/one-me-bot-api';
 
 // Создайте экземпляр класса `Bot` и передайте ему токен 
 const bot = new Bot(process.env.BOT_TOKEN);
