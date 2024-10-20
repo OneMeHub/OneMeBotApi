@@ -44,13 +44,12 @@
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.25.2",
+    "mit-license": "^1.0.0",
     "nodemon": "^3.1.7",
     "typescript": "^5.4.2"
   },
   "dependencies": {
     "debug": "^4.3.7",
-    "global": "^4.4.0",
-    "mit-license": "^1.0.0",
     "vcf": "^2.1.2"
   }
 }
