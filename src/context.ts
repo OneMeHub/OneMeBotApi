@@ -1,7 +1,7 @@
 import vCard from 'vcf';
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
-  AnswerOnCallbackExtra, BotInfo, BotStartedUpdate,
+  AnswerOnCallbackExtra, BotInfo, BotStartedUpdate, Chat,
   EditMessageExtra, FilteredUpdate, GetMessagesExtra, Message,
   MessageCallbackUpdate, SenderAction, SendMessageExtra,
   Update, UpdateType, User,
@@ -37,6 +37,11 @@ type GetChatId<U extends Update> =
         : U extends { message: Message }
           ? number
           : undefined;
+
+type GetChat<U extends Update> =
+    | U extends { chat: Chat }
+      ? Chat
+      : undefined;
 
 type GetMsgId<U extends Update> =
     | U extends { message_id: string }
@@ -127,6 +132,10 @@ export class Context<U extends Update = Update> {
 
   get startPayload() {
     return getStartPayload(this.update) as GetStartPayload<U>;
+  }
+
+  get chat() {
+    return getChat(this.update) as GetChat<U>;
   }
 
   get chatId() {
@@ -278,6 +287,19 @@ const getChatId = (update: Update) => {
   if ('message' in update && update.message && 'recipient' in update.message) {
     return update.message.recipient.chat_id;
   }
+
+  if ('chat' in update) {
+    return update.chat.chat_id;
+  }
+
+  return undefined;
+};
+
+const getChat = (update: Update) => {
+  if ('chat' in update) {
+    return update.chat;
+  }
+
   return undefined;
 };
 
