@@ -1,13 +1,19 @@
 import vCard from 'vcf';
 import type { Guard, Guarded, MaybeArray } from './core/helpers/types';
 import type {
-  AnswerOnCallbackExtra, BotInfo, BotStartedUpdate,
-  EditMessageExtra, FilteredUpdate, Message,
-  MessageCallbackUpdate, SendMessageExtra,
+  AnswerOnCallbackExtra, BotInfo, BotStartedUpdate, Chat,
+  EditMessageExtra, FilteredUpdate, GetMessagesExtra, Message,
+  MessageCallbackUpdate, SenderAction, SendMessageExtra,
   Update, UpdateType, User,
 } from './core/network/api';
 
 import { type Api } from './api';
+import {
+  EditChatExtra,
+  GetAllChatsExtra,
+  GetChatMembersExtra,
+  PinMessageExtra,
+} from './core/network/api/modules';
 
 export type FilteredContext<
   Ctx extends Context,
@@ -31,6 +37,11 @@ type GetChatId<U extends Update> =
         : U extends { message: Message }
           ? number
           : undefined;
+
+type GetChat<U extends Update> =
+    | U extends { chat: Chat }
+      ? Chat
+      : undefined;
 
 type GetMsgId<U extends Update> =
     | U extends { message_id: string }
@@ -123,6 +134,10 @@ export class Context<U extends Update = Update> {
     return getStartPayload(this.update) as GetStartPayload<U>;
   }
 
+  get chat() {
+    return getChat(this.update) as GetChat<U>;
+  }
+
   get chatId() {
     return getChatId(this.update) as GetChatId<U>;
   }
@@ -166,6 +181,41 @@ export class Context<U extends Update = Update> {
     return this.api.sendMessageToChat(this.chatId, text, extra);
   }
 
+  async getAllChats(extra?: GetAllChatsExtra) {
+    return this.api.getAllChats(extra);
+  }
+
+  async getChat(chatId?: number) {
+    if (chatId !== undefined) {
+      return this.api.getChat(chatId);
+    }
+    this.assert(this.chatId, 'getChat');
+    return this.api.getChat(this.chatId);
+  }
+
+  async getChatByLink(link: string) {
+    return this.api.getChatByLink(link);
+  }
+
+  async editChatInfo(extra: EditChatExtra) {
+    this.assert(this.chatId, 'editChatInfo');
+    return this.api.editChatInfo(this.chatId, extra);
+  }
+
+  async getMessage(id: string) {
+    return this.api.getMessage(id);
+  }
+
+  async getMessages(extra?: GetMessagesExtra) {
+    this.assert(this.chatId, 'getMessages');
+    return this.api.getMessages(this.chatId, extra);
+  }
+
+  async getPinnedMessage() {
+    this.assert(this.chatId, 'getPinnedMessage');
+    return this.api.getPinnedMessage(this.chatId);
+  }
+
   async editMessage(extra: EditMessageExtra) {
     this.assert(this.messageId, 'editMessage');
     return this.api.editMessage(this.messageId, extra);
@@ -183,6 +233,51 @@ export class Context<U extends Update = Update> {
     this.assert(this.callback, 'answerOnCallback');
     return this.api.answerOnCallback(this.callback.callback_id, extra);
   }
+
+  async getChatMembership() {
+    this.assert(this.chatId, 'getChatMembership');
+    return this.api.getChatMembership(this.chatId);
+  }
+
+  async getChatAdmins() {
+    this.assert(this.chatId, 'getChatAdmins');
+    return this.api.getChatAdmins(this.chatId);
+  }
+
+  async addChatMembers(userIds: number[]) {
+    this.assert(this.chatId, 'addChatMembers');
+    return this.api.addChatMembers(this.chatId, userIds);
+  }
+
+  async getChatMembers(extra?: GetChatMembersExtra) {
+    this.assert(this.chatId, 'getChatMembers');
+    return this.api.getChatMembers(this.chatId, extra);
+  }
+
+  async removeChatMember(userId: number) {
+    this.assert(this.chatId, 'removeChatMember');
+    return this.api.removeChatMember(this.chatId, userId);
+  }
+
+  async pinMessage(messageId: string, extra?: PinMessageExtra) {
+    this.assert(this.chatId, 'pinMessage');
+    return this.api.pinMessage(this.chatId, messageId, extra);
+  }
+
+  async unpinMessage() {
+    this.assert(this.chatId, 'unpinMessage');
+    return this.api.unpinMessage(this.chatId);
+  }
+
+  async sendAction(action: SenderAction) {
+    this.assert(this.chatId, 'sendAction');
+    return this.api.sendAction(this.chatId, action);
+  }
+
+  async leaveChat() {
+    this.assert(this.chatId, 'leaveChat');
+    return this.api.leaveChat(this.chatId);
+  }
 }
 
 const getChatId = (update: Update) => {
@@ -192,6 +287,19 @@ const getChatId = (update: Update) => {
   if ('message' in update && update.message && 'recipient' in update.message) {
     return update.message.recipient.chat_id;
   }
+
+  if ('chat' in update) {
+    return update.chat.chat_id;
+  }
+
+  return undefined;
+};
+
+const getChat = (update: Update) => {
+  if ('chat' in update) {
+    return update.chat;
+  }
+
   return undefined;
 };
 

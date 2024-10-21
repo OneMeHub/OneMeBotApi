@@ -1,25 +1,14 @@
 import type { Guard, MaybeArray } from './core/helpers/types';
 import type { Message, UpdateType } from './core/network/api';
 
+import type {
+  Middleware, MiddlewareFn, MiddlewareObj, NextFn,
+} from './middleware';
+
 import { Context, type FilteredContext } from './context';
 import { createdMessageBodyHas } from './filters';
 
-type MaybePromise<T> = T | Promise<T>;
-
-type NextFn = () => Promise<void>;
-
-type MiddlewareFn<Ctx extends Context> = (
-  ctx: Ctx,
-  next: NextFn,
-) => MaybePromise<unknown>;
-
 type Triggers = MaybeArray<string | RegExp>;
-
-interface MiddlewareObj<Ctx extends Context> {
-  middleware: () => MiddlewareFn<Ctx>;
-}
-
-type Middleware<Ctx extends Context> = MiddlewareFn<Ctx> | MiddlewareObj<Ctx>;
 
 type UpdateFilter<Ctx extends Context> = UpdateType | Guard<Ctx['update']>;
 

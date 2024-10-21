@@ -3,19 +3,12 @@ import { OneMeError } from './error';
 
 import type { ApiMethods } from './modules/types';
 
-type ApiCallFn<HTTPMethod extends keyof ApiMethods, Res = unknown> = <
-  Method extends keyof ApiMethods[HTTPMethod],
-  MethodInput extends Method | string,
->(
-  method: MethodInput,
-  options: MethodInput extends Method
-    // @ts-ignore
-    ? ApiMethods[HTTPMethod][MethodInput]['req']
-    : Omit<ReqOptions, 'method'>,
-) => Promise<MethodInput extends Method
+type ApiCallFn<HTTPMethod extends keyof ApiMethods> = <Method extends keyof ApiMethods[HTTPMethod]>(
+  method: Method,
   // @ts-ignore
-  ? ApiMethods[HTTPMethod][MethodInput]['res']
-  : Res>;
+  options: ApiMethods[HTTPMethod][Method]['req']
+  // @ts-ignore
+) => Promise<ApiMethods[HTTPMethod][Method]['res']>;
 
 export class BaseApi {
   private readonly call: Client['call'];
