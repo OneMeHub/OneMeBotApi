@@ -87,7 +87,7 @@ const buildUrl = (baseUrl: string, token: string, path?: ReqOptions['path']): st
 
   if (path) {
     Object.keys(path)?.forEach((key) => {
-      const regexp = new RegExp(`{{${key}}}`, 'g');
+      const regexp = new RegExp(`{${key}}`, 'g');
       const value = path[key].toString();
       url = url.replace(regexp, value);
     });

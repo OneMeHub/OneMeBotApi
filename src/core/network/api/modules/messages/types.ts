@@ -1,5 +1,33 @@
-import { AttachmentRequest, Message, MessageLinkType } from '../../types';
+import {
+  ActionResponse, AttachmentRequest, Message, MessageLinkType,
+} from '../../types';
 import type { FlattenReq } from '../types';
+
+export type GetMessageDTO = {
+  path: {
+    message_id: string;
+  }
+};
+
+export type GetMessageResponse = Message;
+
+export type GetMessagesDTO = {
+  query: {
+    chat_id?: number;
+    message_ids?: string | null;
+    from?: number;
+    to?: number;
+    count?: number;
+  }
+};
+
+export type GetMessagesExtra = Omit<FlattenReq<GetMessagesDTO>, 'chat_id' | 'message_ids'> & {
+  message_ids?: string[]
+};
+
+export type GetMessagesResponse = {
+  messages: Message[]
+};
 
 export type SendMessageDTO = {
   query: {
@@ -30,9 +58,7 @@ export type DeleteMessageDTO = {
 
 export type DeleteMessageExtra = Omit<FlattenReq<DeleteMessageDTO>, 'message_id'>;
 
-export type DeleteMessageResponse =
-    | { success: true; }
-    | { success: false; message: string };
+export type DeleteMessageResponse = ActionResponse;
 
 export type EditMessageDTO = {
   query: {
@@ -43,9 +69,7 @@ export type EditMessageDTO = {
 
 export type EditMessageExtra = Omit<FlattenReq<EditMessageDTO>, 'message_id'>;
 
-export type EditMessageResponse =
-    | { success: true; }
-    | { success: false; message: string };
+export type EditMessageResponse = ActionResponse;
 
 export type AnswerOnCallbackDTO = {
   query: {
@@ -59,6 +83,4 @@ export type AnswerOnCallbackDTO = {
 
 export type AnswerOnCallbackExtra = Omit<FlattenReq<AnswerOnCallbackDTO>, 'callback_id'>;
 
-export type AnswerOnCallbackResponse =
-    | { success: true; }
-    | { success: false; message: string };
+export type AnswerOnCallbackResponse = ActionResponse;
