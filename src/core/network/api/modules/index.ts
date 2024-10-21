@@ -12,3 +12,6 @@ export * from './subscriptions/types';
 
 export { UploadsApi } from './uploads/api';
 export * from './uploads/types';
+
+export { ChatsApi } from './chats/api';
+export * from './chats/types';

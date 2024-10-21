@@ -20,3 +20,23 @@ export type Chat = {
   chat_message_id?: string | null;
   pinned_message?: object | null;
 };
+
+export type SenderAction = 'typing_on' | 'sending_photo' | 'sending_video' | 'sending_audio' | 'sending_file' | 'mark_seen';
+
+export type ChatPermissions = 'read_all_messages' | 'add_remove_members' | 'add_admins' | 'change_chat_info' | 'pin_message' | 'write';
+
+export type ChatMember = {
+  user_id: number;
+  name: string;
+  username: string | null;
+  is_bot: boolean;
+  last_activity_time: number;
+  description?: string | null;
+  avatar_url?: string;
+  full_avatar_url?: string;
+  last_access_time: number;
+  is_owner: boolean;
+  is_admin: boolean;
+  join_time: number;
+  permissions: ChatPermissions[] | null;
+};

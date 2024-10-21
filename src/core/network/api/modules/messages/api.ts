@@ -1,10 +1,29 @@
 import { sleep } from '../../../../../utils';
 import { OneMeError } from '../../error';
 import { BaseApi } from '../../base-api';
-import type { FlattenReq, SendMessageResponse } from '../types';
+import type {
+  FlattenReq,
+  GetMessageDTO,
+  GetMessageResponse,
+  GetMessagesDTO,
+  GetMessagesResponse,
+  SendMessageResponse,
+} from '../types';
 import type { SendMessageDTO, DeleteMessageDTO } from './types';
 
 export class MessagesApi extends BaseApi {
+  get = async ({ ...query }: FlattenReq<GetMessagesDTO>): Promise<GetMessagesResponse> => {
+    return this._get('messages', {
+      query,
+    });
+  };
+
+  getById = async ({ message_id }: FlattenReq<GetMessageDTO>): Promise<GetMessageResponse> => {
+    return this._get('messages/{message_id}', {
+      path: { message_id },
+    });
+  };
+
   send = async ({
     chat_id, user_id, disable_link_preview, ...body
   }: FlattenReq<SendMessageDTO>): Promise<SendMessageResponse> => {

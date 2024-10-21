@@ -68,6 +68,12 @@ export type ShareAttachmentRequest = {
   }>;
 };
 
+export type PhotoAttachmentRequestPayload = {
+  url?: string | null;
+  token?: string | null;
+  photos?: Record<string, string> | null;
+};
+
 export type AttachmentRequest =
     | ImageAttachmentRequest
     | VideoAttachmentRequest

@@ -63,8 +63,8 @@ console.log(message.body.mid);
 > ctx.api.raw.delete('method', {/* параметры запроса */});
 > 
 > // Вызов метода редактирования чата с id=123
-> await ctx.api.raw.patch('chats/{chatId}', {
->   path: { chatId: 123 }, // параметры ссылки
+> await ctx.api.raw.patch('chats/{chat_id}', {
+>   path: { chat_id: 123 }, // параметры ссылки
 >   body: { title: 'New Title' }, // тело запроса
 >   query: { notify: false }, // параметры поиска
 > });
