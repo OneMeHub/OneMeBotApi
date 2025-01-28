@@ -4,7 +4,7 @@ const debug = createDebug('one-me:client');
 
 const defaultOptions = {
   baseUrl: 'https://botapi.tamtam.chat',
-} as const;
+};
 
 export type ClientOptions = Partial<typeof defaultOptions>;
 
